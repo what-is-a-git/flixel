@@ -131,7 +131,7 @@ class FlxCamera extends FlxBasic
 	 * Values are bounded between `0.0` and `60 / FlxG.updateFramerate` for consistency across framerates.
 	 * The maximum value means no camera easing. A value of `0` means the camera does not move.
 	 */
-	public var followLerp(default, set):Float = getFollowRate();
+	public var followLerp(default, set):Float = 1;
 
 	/**
 	 * You can assign a "dead zone" to the camera in order to better control its movement.
@@ -1275,14 +1275,16 @@ class FlxCamera extends FlxBasic
 			}
 		}
 
-		if (followLerp >= getFollowRate())
+		var adjustedLerp:Float = followLerp * FlxG.elapsed * 60;
+		
+		if (adjustedLerp >= 1 || followLerp == Math.POSITIVE_INFINITY || followLerp >= 1)
 		{
 			scroll.copyFrom(_scrollTarget); // no easing
 		}
 		else
 		{
-			scroll.x += (_scrollTarget.x - scroll.x) * followLerp * getFollowRate();
-			scroll.y += (_scrollTarget.y - scroll.y) * followLerp * getFollowRate();
+			scroll.x = FlxMath.lerp(scroll.x, _scrollTarget.x, adjustedLerp);
+			scroll.y = FlxMath.lerp(scroll.y, _scrollTarget.y, adjustedLerp);
 		}
 	}
 
@@ -1471,7 +1473,7 @@ class FlxCamera extends FlxBasic
 			Style = LOCKON;
 
 		if (Lerp == null)
-			Lerp = 60 / FlxG.updateFramerate;
+			Lerp = 1;
 
 		style = Style;
 		target = Target;
@@ -1957,18 +1959,9 @@ class FlxCamera extends FlxBasic
 		return contained;
 	}
 
-	public static function getFollowRate():Float
-	{
-		if (FlxG.updateFramerate <= 0) {
-			return 60.0 / 1000.0; // bandaid fix but whatevs
-		}
-		
-		return 60.0 / FlxG.updateFramerate;
-	}
-
 	function set_followLerp(Value:Float):Float
 	{
-		return followLerp = FlxMath.bound(Value, 0.0, getFollowRate());
+		return followLerp = FlxMath.bound(Value, 0.0, 1.0);
 	}
 
 	function set_width(Value:Int):Int
