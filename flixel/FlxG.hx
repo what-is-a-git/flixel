@@ -792,8 +792,16 @@ class FlxG
 
 		updateFramerate = value;
 
-		game._stepMS = Math.abs(1000 / value);
-		game._stepSeconds = game._stepMS / 1000;
+		if (value > 0)
+		{
+			game._stepMS = Math.abs(1000 / value);
+			game._stepSeconds = game._stepMS / 1000;
+		}
+		else
+		{
+			game._stepMS = 0.0;
+			game._stepSeconds = 0.0;
+		}
 
 		if (game._maxAccumulation < game._stepMS)
 			game._maxAccumulation = game._stepMS;
