@@ -548,7 +548,6 @@ class FlxGame extends Sprite
 
 			if (FlxG.fixedTimestep && _stepMS > 0.0)
 			{
-				trace(_stepMS);
 				_accumulator += _elapsedMS;
 				_accumulator = (_accumulator > _maxAccumulation) ? _maxAccumulation : _accumulator;
 
